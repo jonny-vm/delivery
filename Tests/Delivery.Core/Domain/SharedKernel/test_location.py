@@ -17,5 +17,6 @@ def test_location() -> None:
     assert 10 == b.y
     assert not a.is_eqiv(b)
     assert a.is_eqiv(c)
+    assert 9 == a.get_distance(b)
     with pytest.raises(loc_module.CoordinateException):
         loc_module.Location(0, 11)
