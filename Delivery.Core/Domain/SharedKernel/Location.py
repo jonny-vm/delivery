@@ -26,7 +26,7 @@ class Location:
                 f"Coordinate Y must be greater or equal than {self.min_y} and less or equal than {self.max_y}"
             )
 
-    def is_eqiv(self, loc: "Location") -> bool:
+    def is_equiv(self, loc: "Location") -> bool:
         return self.x == loc.x and self.y == loc.y
 
     def get_distance(self, loc: "Location") -> int:
