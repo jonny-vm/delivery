@@ -13,7 +13,7 @@ def test_transport(capsys) -> None:
     b = trnsp_module.Transport(name="auto", speed=3)
     c = trnsp_module.Transport(name="walk", speed=1)
 
-    assert not a.is_equiv(c)
+    assert a != c
     assert 3 == b.move()
 
     achieve_result = False
@@ -25,7 +25,7 @@ def test_transport(capsys) -> None:
     for step in range(1, max_step):
         loc_1 = b.get_next_location(loc_1, loc_2)
         print(f"step={step}, {str(loc_1)}")
-        if loc_1.is_equiv(loc_2):
+        if loc_1 == loc_2:
             achieve_result = True
             break
     assert achieve_result
@@ -39,7 +39,7 @@ def test_transport(capsys) -> None:
 
     for step in range(1, max_step):
         loc_1 = a.get_next_location(loc_1, loc_2)
-        if loc_1.is_equiv(loc_2):
+        if loc_1 == loc_2:
             break
     assert step == max_step - 1
 

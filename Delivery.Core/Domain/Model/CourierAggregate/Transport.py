@@ -1,4 +1,3 @@
-import uuid
 from dataclasses import dataclass, field
 import importlib.util as imp
 
@@ -9,23 +8,27 @@ spec = imp.spec_from_file_location(
 loc_module = imp.module_from_spec(spec)
 spec.loader.exec_module(loc_module)
 
+spec = imp.spec_from_file_location(
+    "Entity", "Delivery.Core\\Domain\\SharedKernel\\Entity.py"
+)
+ent_module = imp.module_from_spec(spec)
+spec.loader.exec_module(ent_module)
+
 
 class TransportException(Exception):
     """Class for transport validation exceptions"""
 
 
 class Location(loc_module.Location):
-    """Location class from location module"""
+    """Location class from kernel"""
 
 
-def get_next_uuid() -> uuid.uuid4:
-    """Generates new UUID"""
-    return uuid.uuid4()
+class Entity(ent_module.Entity):
+    """Entity class from kernel"""
 
 
 @dataclass
-class Transport:
-    id: uuid.UUID = field(default_factory=get_next_uuid, kw_only=True)
+class Transport(Entity):
     name: str
     speed: int
 
@@ -43,9 +46,6 @@ class Transport:
                     f"Transport {name} must be greater or equal than {self.min_speed} and less or equal than {self.max_speed}"
                 )
         self.__dict__[name] = value
-
-    def is_equiv(self, transp: "Transport") -> bool:
-        return self.id == transp.id
 
     def move(self) -> int:
         return self.step * self.speed
@@ -67,4 +67,4 @@ class Transport:
         current_move = max(current_move - abs(current_location.x - aim_location.x), 0)
         current_y = get_new_coordinate(current_location.y, aim_location.y, current_move)
 
-        return Location(current_x, current_y)
+        return loc_module.Location(current_x, current_y)
