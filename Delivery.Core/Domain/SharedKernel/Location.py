@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import random
+from typing import Any
 
 
 class CoordinateException(Exception):
@@ -26,8 +27,10 @@ class Location:
                 f"Coordinate Y must be greater or equal than {self.min_y} and less or equal than {self.max_y}"
             )
 
-    def is_equiv(self, loc: "Location") -> bool:
-        return self.x == loc.x and self.y == loc.y
+    def __eq__(self, other_obj: Any) -> bool:
+        if isinstance(other_obj, type(self)):
+            return self.x == other_obj.x and self.y == other_obj.y
+        return False
 
     def get_distance(self, loc: "Location") -> int:
         return abs(loc.x - self.x) + abs(loc.y - self.y)
