@@ -1,30 +1,11 @@
 from dataclasses import dataclass, field
-import importlib.util as imp
 
-
-spec = imp.spec_from_file_location(
-    "Location", "Delivery.Core\\Domain\\SharedKernel\\Location.py"
-)
-loc_module = imp.module_from_spec(spec)
-spec.loader.exec_module(loc_module)
-
-spec = imp.spec_from_file_location(
-    "Entity", "Delivery.Core\\Domain\\SharedKernel\\Entity.py"
-)
-ent_module = imp.module_from_spec(spec)
-spec.loader.exec_module(ent_module)
+from delivery.core.Domain.SharedKernel.Entity import Entity
+from delivery.core.Domain.SharedKernel.Location import Location
 
 
 class TransportException(Exception):
     """Class for transport validation exceptions"""
-
-
-class Location(loc_module.Location):
-    """Location class from kernel"""
-
-
-class Entity(ent_module.Entity):
-    """Entity class from kernel"""
 
 
 @dataclass
@@ -67,4 +48,4 @@ class Transport(Entity):
         current_move = max(current_move - abs(current_location.x - aim_location.x), 0)
         current_y = get_new_coordinate(current_location.y, aim_location.y, current_move)
 
-        return loc_module.Location(current_x, current_y)
+        return Location(current_x, current_y)

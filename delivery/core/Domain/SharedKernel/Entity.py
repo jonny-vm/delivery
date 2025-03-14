@@ -11,7 +11,7 @@ class Entity:
     )
 
     @classmethod
-    def get_next_uuid(cls) -> uuid.uuid4:
+    def get_next_uuid(cls) -> uuid.UUID:
         """Generates new UUID"""
         return uuid.uuid4()
 
