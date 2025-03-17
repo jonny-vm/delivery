@@ -6,10 +6,10 @@ from delivery.core.Domain.Model.CourierAggregate.Transport import (
 )
 
 
-def test_transport(capsys) -> None:
-    a = Transport(name="walk", speed=1)
+def test_transport() -> None:
+    a = Transport(name="on_foot", speed=1)
     b = Transport(name="auto", speed=3)
-    c = Transport(name="walk", speed=1)
+    c = Transport(name="on_foot", speed=1)
 
     assert a != c
     assert 3 == b.move()
@@ -31,11 +31,11 @@ def test_transport(capsys) -> None:
     loc_1 = Location(Location.min_x, Location.min_y)
     loc_2 = Location(Location.max_x, Location.max_y)
 
-    for step in range(1, max_step):
+    for step in range(max_step):
         loc_1 = a.get_next_location(loc_1, loc_2)
         if loc_1 == loc_2:
             break
-    assert step == max_step - 1
+    assert step == max_step - 2
 
     with pytest.raises(TransportException):
         a.name = ""
