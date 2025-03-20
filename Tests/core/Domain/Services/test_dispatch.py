@@ -1,7 +1,6 @@
 import pytest
 import uuid
-from delivery.core.Domain.Services.IDispatchService import Dispatch
-from delivery.core.Domain.Services.DispatchService import DispatchException
+from delivery.core.Domain.Services.DispatchService import Dispatch, DispatchException
 from delivery.core.Domain.SharedKernel.Location import Location
 from delivery.core.Domain.Model.OrderAggregate.Order import Order
 from delivery.core.Domain.Model.CourierAggregate.Courier import Courier
