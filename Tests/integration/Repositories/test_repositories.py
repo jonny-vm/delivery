@@ -189,7 +189,7 @@ async def test_all_free_couriers(db_conn, exec_db_tests) -> None:
         assert len(all_free) > 0
 
 
-@pytest.mark.usefixtures("db_rollback")
 @pytest.mark.last
-async def test_rlbck() -> None:
+@pytest.mark.usefixtures("db_rollback")
+async def test_rlbck(db_rollback) -> None:
     assert True

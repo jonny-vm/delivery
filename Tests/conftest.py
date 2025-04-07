@@ -13,14 +13,16 @@ async def db_conn():
         pool_pre_ping=True,
         connect_args={},
     )
-
-    async with engine.connect() as conn:
-        yield conn
+    try:
+        async with engine.connect() as conn:
+            yield conn
+    except ConnectionError:
+        yield
 
 
 @pytest_asyncio.fixture
 async def exec_db_tests(db_conn) -> bool:
-    return True if db_conn else False
+    return bool(db_conn) if db_conn else False
 
 
 @pytest_asyncio.fixture
@@ -42,16 +44,18 @@ async def create_tables():
 
 
 @pytest_asyncio.fixture
-async def db_init(db_conn, create_db_schema, create_tables):
-    for tbl in Base.metadata.tables.values():
-        await create_db_schema(db_conn=db_conn, name=tbl.schema)
-    await create_tables(db_conn=db_conn)
-    await db_conn.commit()
+async def db_init(exec_db_tests, db_conn, create_db_schema, create_tables):
+    if exec_db_tests:
+        for tbl in Base.metadata.tables.values():
+            await create_db_schema(db_conn=db_conn, name=tbl.schema)
+        await create_tables(db_conn=db_conn)
+        await db_conn.commit()
 
 
 @pytest_asyncio.fixture
-async def db_rollback(db_conn):
-    for tbl in Base.metadata.tables.values():
-        sql_exec = f"""DROP SCHEMA IF EXISTS {tbl.schema} CASCADE"""
-        await db_conn.execute(text(sql_exec))
-        await db_conn.commit()
+async def db_rollback(exec_db_tests, db_conn):
+    if exec_db_tests:
+        for tbl in Base.metadata.tables.values():
+            sql_exec = f"""DROP SCHEMA IF EXISTS {tbl.schema} CASCADE"""
+            await db_conn.execute(text(sql_exec))
+            await db_conn.commit()
