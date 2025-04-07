@@ -1,19 +1,24 @@
 import math
-from dataclasses import dataclass
 from typing import Self
+from uuid import UUID
 
 from delivery.core.Domain.Model.CourierAggregate.CourierStatus import CourierStatus
 from delivery.core.Domain.Model.CourierAggregate.Transport import Transport
-from delivery.core.Domain.SharedKernel.Entity import Aggregate
+
 from delivery.core.Domain.SharedKernel.Location import Location
+from pydantic import BaseModel, Field, ConfigDict
+
+from delivery.core.Domain.SharedKernel.Entity import Entity
 
 
 class CourierException(Exception):
     """Class for courier validation exceptions"""
 
 
-@dataclass
-class Courier(Aggregate):
+class Courier(BaseModel):
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+
+    id: UUID = Field(init=False, default_factory=lambda: Entity.get_next_uuid())
     name: str
     transport: Transport
     location: Location
@@ -25,7 +30,7 @@ class Courier(Aggregate):
     ) -> Self:
         return cls(
             name=name,
-            transport=Transport(transport_name, transport_speed),
+            transport=Transport(name=transport_name, speed=transport_speed),
             location=location,
             status=CourierStatus.Free,
         )

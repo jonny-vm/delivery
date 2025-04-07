@@ -1,21 +1,29 @@
-from dataclasses import dataclass, field
+from delivery.core.Domain.SharedKernel.Location import Location
+from pydantic import BaseModel, ConfigDict, Field
 
 from delivery.core.Domain.SharedKernel.Entity import Entity
-from delivery.core.Domain.SharedKernel.Location import Location
+from uuid import UUID
+from typing import Any
 
 
 class TransportException(Exception):
     """Class for transport validation exceptions"""
 
 
-@dataclass
-class Transport(Entity):
+class Transport(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID = Field(init=False, default_factory=lambda: Entity.get_next_uuid())
     name: str
     speed: int
 
-    min_speed: int = field(init=False, repr=False, default=1)
-    max_speed: int = field(init=False, repr=False, default=3)
-    step: int = field(init=False, repr=False, default=1)
+    min_speed: int = Field(init=False, repr=False, default=1)
+    max_speed: int = Field(init=False, repr=False, default=3)
+    step: int = Field(init=False, repr=False, default=1)
+
+    def __eq__(self, other_obj: Any) -> bool:
+        if isinstance(other_obj, type(self)):
+            return self.id == other_obj.id
+        return False
 
     def __setattr__(self, name, value):
         if name == "name":
