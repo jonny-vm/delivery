@@ -1,22 +1,27 @@
+import uuid
+from typing import Optional, Sequence
+
 import pytest
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from delivery.core.Domain.Model.CourierAggregate.Courier import Courier
+from delivery.core.Domain.Model.OrderAggregate.Order import Order
+from delivery.core.Domain.Model.OrderAggregate.OrderStatus import OrderStatus
+from delivery.core.Domain.SharedKernel.Location import Location
 from delivery.infrastructure.Adapters.Postgres.Repositories.CourierRepository import (
     CourierRepository,
 )
-from delivery.core.Domain.SharedKernel.Location import Location
-from delivery.core.Domain.Model.CourierAggregate.Courier import Courier
-from sqlalchemy.ext.asyncio import async_sessionmaker
 from delivery.infrastructure.Adapters.Postgres.Repositories.OrderRepository import (
     OrderRepository,
 )
-from delivery.core.Domain.Model.OrderAggregate.OrderStatus import OrderStatus
-from delivery.core.Domain.Model.OrderAggregate.Order import Order
-import uuid
-from typing import Sequence, Optional
 
 
 @pytest.mark.usefixtures("db_init")
 @pytest.mark.first
+async def test_init() -> None:
+    assert True
+
+
 async def test_addorder(db_conn, exec_db_tests) -> None:
     if not exec_db_tests:
         pytest.skip("DB not connected")
@@ -162,7 +167,7 @@ async def test_updatecourier(db_conn, exec_db_tests) -> None:
             cour = courier_add_agr
             cour.location = loc
             cour.transport.speed = 3
-            courier_upd_agr = await crep.update(courier_add_agr.id, cour)
+            courier_upd_agr = await crep.update(cour)
             if courier_upd_agr:
                 assert courier_upd_agr.__class__ == courier_add_agr.__class__
                 assert courier_upd_agr.transport.id == courier_add_agr.transport.id
@@ -183,7 +188,7 @@ async def test_all_free_couriers(db_conn, exec_db_tests) -> None:
         cour = Courier.CreateCourier(
             name="cour1", transport_name="tr1", transport_speed=2, location=loc
         )
-        courier_add_agr = await crep.add(cour)
+        courier_add_agr = await crep.add(cour)  # noqa: F841
         all_free: Optional[Sequence] = await crep.get_all_free()
         assert all_free
         assert len(all_free) > 0
@@ -191,5 +196,5 @@ async def test_all_free_couriers(db_conn, exec_db_tests) -> None:
 
 @pytest.mark.last
 @pytest.mark.usefixtures("db_rollback")
-async def test_rlbck(db_rollback) -> None:
+async def test_rlbck() -> None:
     assert True

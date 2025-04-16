@@ -1,17 +1,24 @@
-from delivery.core.Ports.InterfaceOrderRepository import InterfaceOrderRepository
+from dataclasses import dataclass
+from typing import Optional, Sequence
+from uuid import UUID
+
+from sqlalchemy import insert, select, update
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from delivery.core.Domain.Model.OrderAggregate.Order import Order
+from delivery.core.Domain.Model.OrderAggregate.OrderStatus import OrderStatus
+from delivery.core.Ports.InterfaceOrderRepository import InterfaceOrderRepository
+from delivery.infrastructure.Adapters.Postgres.db import get_db_session
 from delivery.infrastructure.Adapters.Postgres.Models.OrderAggregate.order import (
     OrderModel,
 )
-from delivery.core.Domain.Model.OrderAggregate.OrderStatus import OrderStatus
-from typing import Sequence, Optional
-from sqlalchemy import insert, select, update
-from sqlalchemy.exc import NoResultFound
-from uuid import UUID
 
 
+@dataclass
 class OrderRepository(InterfaceOrderRepository):
+    session: AsyncSession = get_db_session()
+
     async def get(self, id: UUID) -> Optional[Order]:
         try:
             result = await self.session.execute(select(OrderModel).filter_by(id=id))
@@ -50,14 +57,11 @@ class OrderRepository(InterfaceOrderRepository):
         return Order.model_validate(model)
 
     async def get_anyone_created(self) -> Optional[Order]:
-        try:
-            result = await self.session.execute(
-                select(OrderModel).filter_by(status=OrderStatus.Created)
-            )
-            model = result.scalars().first()
-        except NoResultFound:
-            return None
-        return Order.model_validate(model)
+        result = await self.session.execute(
+            select(OrderModel).filter_by(status=OrderStatus.Created)
+        )
+        model = result.scalars().first()
+        return None if not model else Order.model_validate(model)
 
     async def get_all_assigned(self) -> Optional[Sequence[Order]]:
         try:

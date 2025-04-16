@@ -1,11 +1,11 @@
 from abc import abstractmethod
-from uuid import UUID
-from delivery.core.Ports.repositories import SQLAbstractRepository
-from delivery.core.Domain.Model.CourierAggregate.Courier import Courier
 from typing import Optional, Sequence
+from uuid import UUID
+
+from delivery.core.Domain.Model.CourierAggregate.Courier import Courier
 
 
-class InterfaceCourierRepository(SQLAbstractRepository):
+class InterfaceCourierRepository:
     @abstractmethod
     async def add(self, order: Courier) -> Optional[Courier]:
         pass
@@ -15,7 +15,7 @@ class InterfaceCourierRepository(SQLAbstractRepository):
         pass
 
     @abstractmethod
-    async def update(self, id: UUID, courier: Courier) -> Optional[Courier]:
+    async def update(self, courier: Courier) -> Optional[Courier]:
         pass
 
     @abstractmethod
