@@ -1,11 +1,11 @@
 from abc import abstractmethod
-from uuid import UUID
-from delivery.core.Ports.repositories import SQLAbstractRepository
-from delivery.core.Domain.Model.OrderAggregate.Order import Order
 from typing import Optional, Sequence
+from uuid import UUID
+
+from delivery.core.Domain.Model.OrderAggregate.Order import Order
 
 
-class InterfaceOrderRepository(SQLAbstractRepository):
+class InterfaceOrderRepository:
     @abstractmethod
     async def add(self, order: Order) -> Optional[Order]:
         pass

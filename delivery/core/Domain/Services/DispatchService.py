@@ -1,5 +1,5 @@
-from delivery.core.Domain.Model.OrderAggregate.Order import Order
 from delivery.core.Domain.Model.CourierAggregate.Courier import Courier, CourierStatus
+from delivery.core.Domain.Model.OrderAggregate.Order import Order
 
 
 class DispatchException(Exception):
@@ -21,4 +21,5 @@ def Dispatch(order: Order, couriers: list[Courier]) -> Courier:
     if not courier:
         raise DispatchException("There is not a single free courier")
 
+    courier.setBusy()
     return courier

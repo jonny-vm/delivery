@@ -1,19 +1,25 @@
-from delivery.core.Ports.InterfaceCourierRepository import InterfaceCourierRepository
+from dataclasses import dataclass
+from typing import Optional, Sequence
+from uuid import UUID
+
+from sqlalchemy import insert, select, update
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from delivery.core.Domain.Model.CourierAggregate.Courier import Courier
-
+from delivery.core.Domain.Model.CourierAggregate.CourierStatus import CourierStatus
+from delivery.core.Ports.InterfaceCourierRepository import InterfaceCourierRepository
+from delivery.infrastructure.Adapters.Postgres.db import get_db_session
 from delivery.infrastructure.Adapters.Postgres.Models.CourierAggregate.courier import (
     CourierModel,
     TransportModel,
 )
-from delivery.core.Domain.Model.CourierAggregate.CourierStatus import CourierStatus
-from typing import Sequence, Optional
-from sqlalchemy import insert, select, update
-from sqlalchemy.exc import NoResultFound
-from uuid import UUID
 
 
+@dataclass
 class CourierRepository(InterfaceCourierRepository):
+    session: AsyncSession = get_db_session()
+
     async def get(self, id: UUID) -> Optional[Courier]:
         try:
             result_courier = await self.session.execute(
@@ -59,11 +65,11 @@ class CourierRepository(InterfaceCourierRepository):
 
         return Courier.model_validate(model_courier)
 
-    async def update(self, id: UUID, courier: Courier) -> Optional[Courier]:
+    async def update(self, courier: Courier) -> Optional[Courier]:
         try:
             result_courier = await self.session.execute(
                 update(CourierModel)
-                .filter_by(id=id)
+                .filter_by(id=courier.id)
                 .values(
                     {
                         "status": courier.status,
@@ -76,7 +82,7 @@ class CourierRepository(InterfaceCourierRepository):
                 .returning(CourierModel)
             )
             model = result_courier.scalar_one()
-            result_transport = await self.session.execute(
+            result_transport = await self.session.execute(  # noqa: F841
                 update(TransportModel)
                 .filter_by(id=model.transport_id)
                 .values(
