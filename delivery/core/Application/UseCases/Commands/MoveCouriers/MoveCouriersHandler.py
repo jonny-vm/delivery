@@ -8,7 +8,7 @@ from delivery.infrastructure.Adapters.Postgres.Repositories.OrderRepository impo
 )
 
 
-class MoveCourierssHandler:
+class MoveCouriersHandler:
     @classmethod
     async def Handle(cls) -> bool:
         rep_ord = OrderRepository()

@@ -17,7 +17,7 @@ from delivery.infrastructure.Adapters.Postgres.Repositories.OrderRepository impo
 
 
 @pytest.mark.usefixtures("db_init")
-@pytest.mark.first
+@pytest.mark.run("first")
 async def test_init() -> None:
     assert True
 
@@ -194,7 +194,7 @@ async def test_all_free_couriers(db_conn, exec_db_tests) -> None:
         assert len(all_free) > 0
 
 
-@pytest.mark.last
+@pytest.mark.run("last")
 @pytest.mark.usefixtures("db_rollback")
 async def test_rlbck() -> None:
     assert True
