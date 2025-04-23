@@ -1,9 +1,11 @@
-import pytest
 import uuid
+
+import pytest
+
+from delivery.core.Domain.Model.CourierAggregate.Courier import Courier
+from delivery.core.Domain.Model.OrderAggregate.Order import Order
 from delivery.core.Domain.Services.DispatchService import Dispatch, DispatchException
 from delivery.core.Domain.SharedKernel.Location import Location
-from delivery.core.Domain.Model.OrderAggregate.Order import Order
-from delivery.core.Domain.Model.CourierAggregate.Courier import Courier
 
 
 def test_dispatch() -> None:
@@ -26,7 +28,5 @@ def test_dispatch() -> None:
     ord.location = loc_ord
     assert Dispatch(ord, [courier_1, courier_2, courier_3]).name == "John"
 
-    courier_1.setBusy()
-    courier_2.setBusy()
     with pytest.raises(DispatchException):
         Dispatch(ord, [courier_1, courier_2])
