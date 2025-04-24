@@ -3,7 +3,7 @@ from delivery.core.Application.UseCases.Commands.CreateOrder.CreateOrderCommand 
 )
 from delivery.core.Domain.Model.OrderAggregate.Order import Order, OrderException
 from delivery.core.Domain.Model.OrderAggregate.OrderStatus import OrderStatus
-from delivery.core.Domain.SharedKernel.Location import Location
+from delivery.infrastructure.Adapters.Grpc.GeoService.geo import GeoService
 from delivery.infrastructure.Adapters.Postgres.Repositories.OrderRepository import (
     OrderRepository,
 )
@@ -18,7 +18,7 @@ class CreateOrderHandler:
         if await rep.get(orderid):
             raise OrderException(f"Order with id='{orderid}' already exists")
 
-        order_loc = Location.get_random_coordinate()
+        order_loc = await GeoService.get_location(message.Street)
 
         order = await rep.add(Order.CreateOrder(id=orderid, location=order_loc))
 
