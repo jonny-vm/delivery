@@ -11,10 +11,6 @@ from delivery.core.Application.UseCases.Commands.CreateOrder.CreateOrderHandler 
 )
 
 
-class testError(Exception):
-    pass
-
-
 def init_basket_kafka() -> AIOKafkaConsumer:
     topic = os.getenv("BASKET_TOPIC_NAME")
     kservers = os.getenv("BASKET_BOOTSTRAP_SERVERS", "")
