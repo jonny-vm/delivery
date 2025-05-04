@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -14,7 +15,7 @@ description = """API сервиса доставки (delivery)"""
 def create_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        await GetBasket().start()
+        asyncio.create_task(GetBasket().start())
         yield
 
     app = FastAPI(
