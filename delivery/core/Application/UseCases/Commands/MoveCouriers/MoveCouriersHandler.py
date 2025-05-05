@@ -1,6 +1,3 @@
-from delivery.core.Application.DomainEventHandlers.OrderCompletedDomainEventHandler import (
-    OrderCompletedDomainEventHandler,
-)
 from delivery.core.Domain.Model.CourierAggregate.Courier import CourierException
 from delivery.core.Domain.Model.OrderAggregate.Order import OrderException
 from delivery.infrastructure.Adapters.Postgres.Repositories.CourierRepository import (
@@ -9,6 +6,9 @@ from delivery.infrastructure.Adapters.Postgres.Repositories.CourierRepository im
 from delivery.infrastructure.Adapters.Postgres.Repositories.OrderRepository import (
     OrderRepository,
     OrderStatus,
+)
+from delivery.infrastructure.Adapters.Postgres.Repositories.OutboxEntity import (
+    OutboxEntity,
 )
 
 
@@ -32,8 +32,9 @@ class MoveCouriersHandler:
                 courier.setFree()
             await rep_cour.update(courier)
             await rep_ord.update(order.id, order)
-            await rep_ord.session.commit()
 
             if order.status == OrderStatus.Completed:
-                await OrderCompletedDomainEventHandler.handle(order)
+                await OutboxEntity(rep_ord.session).add(order)
+
+            await rep_ord.session.commit()
         return True

@@ -8,6 +8,9 @@ from starlette import status
 
 from delivery.api.Adapters.Http import controller
 from delivery.api.Adapters.Kafka.Basket.basket import GetBasket
+from delivery.infrastructure.Adapters.Postgres.BackgroundJobs.ProcessOutboxMessages import (
+    ProcessOutboxMessages,
+)
 
 description = """API сервиса доставки (delivery)"""
 
@@ -16,6 +19,7 @@ def create_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         asyncio.create_task(GetBasket().start())
+        asyncio.create_task(ProcessOutboxMessages.process())
         yield
 
     app = FastAPI(

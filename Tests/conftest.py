@@ -2,8 +2,7 @@ import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
-from delivery.infrastructure.Adapters.Postgres.db import get_url
-from delivery.infrastructure.Adapters.Postgres.Models.OrderAggregate.order import Base
+from delivery.infrastructure.Adapters.Postgres.db import Base, get_url
 
 
 @pytest_asyncio.fixture
